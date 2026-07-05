@@ -1,0 +1,54 @@
+import random
+from settings import token
+import discord
+from discord.ext import commands
+
+from funciones import gen_pass
+
+intents = discord.Intents.default()
+intents.message_content = True
+
+bot = commands.Bot(command_prefix='$', intents=intents)
+
+@bot.event
+async def on_ready():
+    print(f'We have logged in as {bot.user}')
+
+@bot.command()
+async def hello(ctx):
+    await ctx.send(f'Hola, soy un bot {bot.user}!')
+
+@bot.command()
+async def heh(ctx, count_heh = 5):
+    await ctx.send("he" * count_heh)
+
+@bot.command()
+async def saludo(ctx, nombre:str):
+    await ctx.send(f'Hola {nombre}, soy un bot!')
+
+@bot.command()
+async def suma(ctx, num1:int,num2:int):
+    await ctx.send(f'La suma de {num1} y {num2} es {num1 + num2}')
+
+@bot.command()
+async def password(ctx, num:int):
+    await ctx.send(f'Tu contraseña es: {gen_pass(num)}')
+
+@bot.command()
+async def roll(ctx, dice: str):
+    """Rolls a dice in NdN format."""
+    try:
+        rolls, limit = map(int, dice.split('d'))
+    except Exception:
+        await ctx.send('Format has to be in NdN!')
+        return
+
+    result = ', '.join(str(random.randint(1, limit)) for r in range(rolls))
+    await ctx.send(result)
+
+@bot.command()
+async def limpiar(ctx):
+    await ctx.channel.purge()
+    await ctx.send("Mensajes limpiados.", delete_after=3)
+
+bot.run(token)
